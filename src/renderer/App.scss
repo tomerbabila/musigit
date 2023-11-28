@@ -3,3 +3,13 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 @import '~rsuite/dist/rsuite.min.css';
+@import 'styles/normalize.scss';
+
+body {
+  position: relative;
+  height: 100vh;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
