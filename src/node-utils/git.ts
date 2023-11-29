@@ -1,20 +1,14 @@
-// gitOperations.ts
 import simpleGit, { SimpleGit, Options } from 'simple-git';
+import { ResponseModel } from './helpers';
 
-interface GitResponse {
-  success: boolean;
-  message: string;
-  data?: unknown;
-}
-
-export class GitOperations {
+export class Git {
   private git: SimpleGit;
 
   constructor(repoPath: string, options?: Options) {
     this.git = simpleGit(repoPath, options);
   }
 
-  async clone(repoUrl: string, clonePath: string): Promise<GitResponse> {
+  async clone(repoUrl: string, clonePath: string): Promise<ResponseModel> {
     try {
       await this.git.clone(repoUrl, clonePath);
       console.log(`Repository cloned from ${repoUrl} to ${clonePath}`);
@@ -29,7 +23,7 @@ export class GitOperations {
     }
   }
 
-  async pull(): Promise<GitResponse> {
+  async pull(): Promise<ResponseModel> {
     try {
       await this.git.pull();
       console.log('Repository successfully pulled');
@@ -40,11 +34,14 @@ export class GitOperations {
     }
   }
 
-  async commit(message: string): Promise<GitResponse> {
+  async commit(message: string, files: string[]): Promise<ResponseModel> {
     try {
-      await this.git.add('./*').commit(message);
+      await this.git.add(files).commit(message);
       console.log(`Changes committed with message: ${message}`);
-      return { success: true, message: 'Changes committed successfully' };
+      return {
+        success: true,
+        message: `Changes committed with message: ${message}`,
+      };
     } catch (error) {
       console.error('Error committing changes: ', error);
       return {
@@ -55,7 +52,7 @@ export class GitOperations {
     }
   }
 
-  async push(): Promise<GitResponse> {
+  async push(): Promise<ResponseModel> {
     try {
       await this.git.push();
       console.log('Changes successfully pushed');
@@ -66,9 +63,12 @@ export class GitOperations {
     }
   }
 
-  async merge(branchName: string): Promise<GitResponse> {
+  async merge(
+    branchName: string,
+    mergeBranchName: string,
+  ): Promise<ResponseModel> {
     try {
-      await this.git.mergeFromTo('HEAD', branchName);
+      await this.git.mergeFromTo(mergeBranchName, branchName);
       console.log(`Changes merged from branch ${branchName}`);
       return { success: true, message: 'Changes merged successfully' };
     } catch (error) {
@@ -77,7 +77,7 @@ export class GitOperations {
     }
   }
 
-  async createBranch(branchName: string): Promise<GitResponse> {
+  async createBranch(branchName: string): Promise<ResponseModel> {
     try {
       await this.git.checkoutBranch(branchName, 'HEAD');
       console.log(`New branch '${branchName}' created`);
@@ -88,7 +88,7 @@ export class GitOperations {
     }
   }
 
-  async checkout(branchName: string): Promise<GitResponse> {
+  async checkout(branchName: string): Promise<ResponseModel> {
     try {
       await this.git.checkout(branchName);
       console.log(`Switched to branch '${branchName}'`);
@@ -103,7 +103,7 @@ export class GitOperations {
     }
   }
 
-  async status(): Promise<GitResponse> {
+  async status(): Promise<ResponseModel> {
     try {
       const statusSummary = await this.git.status();
       console.log('Git Status:\n', statusSummary);
@@ -122,7 +122,7 @@ export class GitOperations {
     }
   }
 
-  async log(): Promise<GitResponse> {
+  async log(): Promise<ResponseModel> {
     try {
       const logSummary = await this.git.log();
       console.log('Git Log:\n', logSummary);

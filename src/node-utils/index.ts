@@ -1,3 +1,1 @@
-export * from './zipper';
-export * from './unzipper';
-export * from './xml-parser';
+export * from './main';
